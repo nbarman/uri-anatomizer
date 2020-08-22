@@ -1,11 +1,10 @@
 package com.uri.anatomizer.test.controller;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -21,15 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.uri.anatomizer.controller.URIController;
-import com.uri.anatomizer.exception.URIAnatomizeException;
 import com.uri.anatomizer.model.URIModel;
 import com.uri.anatomizer.service.URIService;
 
@@ -104,12 +100,23 @@ public class URIControllerTest {
 	    String requestJson=ow.writeValueAsString(testModel);
 	    
 	    Mockito.when(uriSvc.saveURI(testModel)).thenReturn(resultMap);
-	    MvcResult result =  mockMvc.perform(post("/uri/anatomize/add")
+	    mockMvc.perform(post("/uri/anatomize/add")
 				.contentType("application/json")
 				.content(requestJson))
 	    .andReturn();
+	    assertEquals("A URI with that name already exists", resultMap.get("ERR"));
+	}
+	
+	@Test
+	public void retrieveURI_NegativeURITest() throws Exception{
+		Map<String,String> resultMap = new LinkedHashMap<>();
+		resultMap.put("status", "success");
+		String testName="url2";
 		
-	    System.out.println(result);
+		Mockito.when(uriSvc.retrieveURI(testName)).thenReturn(resultMap);
+		mockMvc.perform(get("/uri//get/{name}","url1"))
+				.andExpect(status().isNotFound());	
+		
 	}
 
 }
