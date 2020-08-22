@@ -35,15 +35,13 @@ public class URIController {
 	public Map<String,String> addUri(@Valid @RequestBody URIModel newURI)throws URIAnatomizeException {
 		resultMap = new LinkedHashMap<>();
 		try {
-			resultMap.putAll(uriSvc.parseAndDisplayComponents(newURI.getUriValue()));
+			resultMap.putAll(uriSvc.saveURI(newURI));
 		} catch (URISyntaxException exception) {
 			resultMap.put("error", "Malformed URI");
 			return resultMap;
-		}
-		
+		}	
 		resultMap.put("status", "success");
-		return resultMap;
-		
+		return resultMap;	
 	}
 	
 	@ExceptionHandler(URIAnatomizeException.class)

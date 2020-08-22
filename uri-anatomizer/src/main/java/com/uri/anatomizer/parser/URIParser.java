@@ -5,26 +5,30 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.uri.anatomizer.constants.Constants;
 import com.uri.anatomizer.exception.URIAnatomizeException;
 
 @Component
 public class URIParser {
-	private static final String REGEX_SC="/^[a-zA-Z0-9](.*[a-zA-Z0-9])?$/";
+	private static final String REGEX_SC="/^[A-Za-z0-9]/";
 	private String protocol;
 	private String hostAddr;
 	private String path;
-	private String query;
+	private String queryParamsStr;
 	private String fragment; //Optional
 	private String userInfo;
 	private String port; //Optional
 	private String userName;
 	private String password;
+	
 	
 	Map<String,String> uriComponentsMap;
 	MultiValueMap<String,String> queryParams;
@@ -53,7 +57,9 @@ public class URIParser {
 		if(protocol==null || hostAddr==null || path==null 
 				|| protocol.isEmpty() || hostAddr.isEmpty() || path.isEmpty() || queryParams.isEmpty()) {
 			malformedURI = true;
-		} else if(isMalformedURI("protocol", protocol)){
+		} else if(isInvalidProtocol(protocol)){
+			malformedURI = true;
+		} else if(isInvalidQueryParams(queryParams)) {
 			malformedURI = true;
 		} else {		
 					retrieveUserNamePassword(userInfo);
@@ -70,15 +76,7 @@ public class URIParser {
 		}
 		uriComponentsMap.put("path", path);
 		//Get all query params (Lambda)
-		StringBuilder queryParams = new StringBuilder();
-		uriComponents.getQueryParams().forEach((k,v) ->{
-			
-			queryParams.append(k);
-			queryParams.append(":");
-			queryParams.append(v);
-			queryParams.append("|");
-		});
-		uriComponentsMap.put("queryParams",  queryParams.toString());
+		uriComponentsMap.put("queryParams",  queryParamsStr);
 		if(fragment!=null && !fragment.isEmpty()) {
 				uriComponentsMap.put("fragment", fragment);
 			}
@@ -99,18 +97,39 @@ public class URIParser {
 			if(userName.isEmpty() || password.isEmpty()) {
 				throw new URIAnatomizeException("userName || Password");
 			} 
+		} else {
+			throw new URIAnatomizeException("userName || Password");
 		}
 		
 	}
 	
 	//Checks for malformed characters in the various components
-	private boolean isMalformedURI(String cName, String component) {
-		
-		if(cName.equalsIgnoreCase("protocol")) {
+	private boolean isInvalidProtocol(String component) {
 			if(Arrays.stream(Protocols.values()).anyMatch((t) -> t.name().equalsIgnoreCase(component))) {
 				return false;
-			}}
+			}
 		return true;
+	}
+	
+	//Checks for invalid characters at the query params level
+	private boolean isInvalidQueryParams(MultiValueMap<String,String> queryParams) {
+		StringBuilder queryParamsStrBuilder = new StringBuilder();
+		queryParams.forEach((k,v) ->{
+			
+			queryParamsStrBuilder.append(k);
+			queryParamsStrBuilder.append(":");
+			queryParamsStrBuilder.append(v);
+			queryParamsStrBuilder.append("|");
+		});
+		
+		queryParamsStr = queryParamsStrBuilder.toString();
+		Matcher queryMatcher = Constants.SC_PATTERN.matcher(queryParamsStr);
+		if(queryMatcher.find()) {
+			return true;
+		}
+		
+		return false;
+		
 	}
 
 }
