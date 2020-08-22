@@ -18,7 +18,6 @@ import com.uri.anatomizer.exception.URIAnatomizeException;
 
 @Component
 public class URIParser {
-	private static final String REGEX_SC="/^[A-Za-z0-9]/";
 	private String protocol;
 	private String hostAddr;
 	private String path;
@@ -28,8 +27,6 @@ public class URIParser {
 	private String port; //Optional
 	private String userName;
 	private String password;
-	
-	
 	Map<String,String> uriComponentsMap;
 	MultiValueMap<String,String> queryParams;
 	boolean malformedURI;
@@ -39,8 +36,28 @@ public class URIParser {
 			http,https,ftp,sftp
 	};
 	
+	/**
+	 * Main public parser method binded to Parser interface
+	 * @param uri
+	 * @return
+	 * @throws URISyntaxException
+	 * @throws URIAnatomizeException
+	 */
+	public Map<String,String> parse(String uri)throws URISyntaxException,URIAnatomizeException{
+		Parser parser = (uriStr) ->{
+			return parseUri(uriStr);
+		};
+		return parser.parse(uri);
+	}
 	
-	public Map<String,String> parseUri(String uriStr) throws URISyntaxException,URIAnatomizeException {
+	/**
+	 * 
+	 * @param uriStr
+	 * @return
+	 * @throws URISyntaxException
+	 * @throws URIAnatomizeException
+	 */
+	private Map<String,String> parseUri(String uriStr) throws URISyntaxException,URIAnatomizeException {
 		
 		malformedURI= false;
 		URI uri = new URI(uriStr);
@@ -84,9 +101,13 @@ public class URIParser {
 			throw new URISyntaxException(uriStr, "Malformed URI");
 		}
 		return uriComponentsMap;
-		
 	}
 	
+	/**
+	 * 
+	 * @param userInfo
+	 * @throws URIAnatomizeException
+	 */
 	//Validates and retrieves the usename and password from the component
 	private void retrieveUserNamePassword(String userInfo) throws URIAnatomizeException {
 		//Check for userInfo
@@ -99,10 +120,14 @@ public class URIParser {
 			} 
 		} else {
 			throw new URIAnatomizeException("userName || Password");
-		}
-		
+		}	
 	}
 	
+	/**
+	 * 
+	 * @param component
+	 * @return
+	 */
 	//Checks for malformed characters in the various components
 	private boolean isInvalidProtocol(String component) {
 			if(Arrays.stream(Protocols.values()).anyMatch((t) -> t.name().equalsIgnoreCase(component))) {
@@ -111,25 +136,25 @@ public class URIParser {
 		return true;
 	}
 	
+	/**
+	 * 
+	 * @param queryParams
+	 * @return
+	 */
 	//Checks for invalid characters at the query params level
 	private boolean isInvalidQueryParams(MultiValueMap<String,String> queryParams) {
 		StringBuilder queryParamsStrBuilder = new StringBuilder();
 		queryParams.forEach((k,v) ->{
-			
 			queryParamsStrBuilder.append(k);
 			queryParamsStrBuilder.append(":");
 			queryParamsStrBuilder.append(v);
 			queryParamsStrBuilder.append("|");
-		});
-		
+		});	
 		queryParamsStr = queryParamsStrBuilder.toString();
 		Matcher queryMatcher = Constants.SC_PATTERN.matcher(queryParamsStr);
 		if(queryMatcher.find()) {
 			return true;
 		}
-		
 		return false;
-		
 	}
-
 }

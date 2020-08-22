@@ -22,16 +22,13 @@ public class URIErrorHandler extends ResponseEntityExceptionHandler {
                                                                   HttpStatus status, WebRequest request) {
 		 Map<String, Object> body = new LinkedHashMap<>();
 	        body.put("status", status.value());
-
 	        //Get all errors
 	        List<String> errors = ex.getBindingResult()
 	                .getFieldErrors()
 	                .stream()
 	                .map(x -> x.getDefaultMessage())
 	                .collect(Collectors.toList());
-
 	        body.put("errors", errors);
-
 	        return new ResponseEntity<>(body, headers, status);
 	}
 

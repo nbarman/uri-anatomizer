@@ -27,7 +27,7 @@ public class URIService {
 	public Map<String,String> saveURI(URIModel uriModel) throws URIAnatomizeException, URISyntaxException {
 		Map<String,String> resultMap = new LinkedHashMap<>();
 		if(!repository.existsById(uriModel.getUriName())){
-			resultMap = parser.parseUri(uriModel.getUriValue());
+			resultMap = parseAndDisplayComponents(uriModel.getUriValue());
 			repository.save(uriModel);
 		} else {
 			resultMap.put("ERR", "A URI with that name already exists");
@@ -50,7 +50,7 @@ public class URIService {
 	}
 	
 	private Map<String,String> parseAndDisplayComponents(String uri) throws URISyntaxException, URIAnatomizeException{
-		return parser.parseUri(uri);
+		return parser.parse(uri);
 	}
 
 }
