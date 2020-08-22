@@ -107,11 +107,6 @@ public class URIParser {
 	private boolean isMalformedURI(String cName, String component) {
 		
 		if(cName.equalsIgnoreCase("protocol")) {
-			/**for(Protocols pc : Protocols.values()) {
-				if(component.equalsIgnoreCase(pc.name())) {
-					return false;
-				}
-			}} **/
 			if(Arrays.stream(Protocols.values()).anyMatch((t) -> t.name().equalsIgnoreCase(component))) {
 				return false;
 			}}
