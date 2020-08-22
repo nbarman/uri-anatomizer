@@ -17,7 +17,7 @@ public class URIModel {
 	private String uriName;
 	
 	@NotNull(message = "Please pass a URI value")
-	@NotBlank(message = "Cannot be blank")
+	@NotBlank(message = "URI Value Cannot be blank")
 	@JsonProperty("uri")
 	private String uriValue;
 

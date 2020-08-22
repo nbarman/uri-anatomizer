@@ -43,7 +43,7 @@ public class URIService {
 			URIModel model = opModel.get();
 			return parseAndDisplayComponents(model.getUriValue());
 		} else {
-			notFoundMap.put("ERR", "Requested URI Not Found");
+			notFoundMap.put("ERR", "Requested URI Not Found in Database");
 			return notFoundMap;
 		}
 		
