@@ -1,4 +1,4 @@
-package com.uri.anatomizer.errors;
+package com.uri.anatomizer.handler;
 
 import java.util.LinkedHashMap;
 import java.util.List;
