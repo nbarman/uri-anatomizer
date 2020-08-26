@@ -29,8 +29,12 @@ import com.uri.anatomizer.service.URIService;
 @RequestMapping(value = "/uri/anatomize", produces = MediaType.APPLICATION_JSON_VALUE)
 public class URIController {
 	
-	@Autowired
 	private URIService uriSvc;
+	
+	@Autowired
+	public void setURISvc(URIService uriSvc) {
+		this.uriSvc = uriSvc;
+	}
 	
 	Map<String, String> resultMap;
 	@PostMapping("/add")

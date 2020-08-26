@@ -16,11 +16,20 @@ import com.uri.anatomizer.repository.URIRepository;
 @Service
 public class URIService {
 	
-	@Autowired
+	
 	private URIRepository repository;
 	
-	@Autowired
 	private URIParser parser;
+	
+	@Autowired
+	public void setParser(URIParser parser) {
+		this.parser = parser;
+	}
+	
+	@Autowired
+	public void setRepository(URIRepository repository) {
+		this.repository = repository;
+	}
 	Map<String,String> uriComponents;
 	
 	
